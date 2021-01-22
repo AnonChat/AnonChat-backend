@@ -11,6 +11,7 @@ import com.kjm.anonchat.auth.repository.RoleRepository;
 import com.kjm.anonchat.auth.repository.UserRepository;
 import com.kjm.anonchat.auth.security.jwt.JwtUtils;
 import com.kjm.anonchat.auth.security.services.UserDetailsImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
+@Slf4j
 public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
@@ -45,6 +47,7 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -58,10 +61,13 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-
+/*
+        log.info(userRepository.findByUsername(userDetails.getUsername()).get().getProfilePicture());
+*/
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
+                userRepository.findByUsername(userDetails.getUsername()).get().getProfilePicture(),
                 userDetails.getEmail(),
                 roles));
     }
@@ -84,6 +90,8 @@ public class AuthController {
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
+
+        user.setProfilePicture("https://www.ctcmath.com/assets/images/placeholder-user.jpg");
 
         Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();

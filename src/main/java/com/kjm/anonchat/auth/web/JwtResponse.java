@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @Data
-@RequiredArgsConstructor
 public class JwtResponse {
     @NonNull
     private String token;
@@ -21,8 +20,19 @@ public class JwtResponse {
     private String username;
 
     @NonNull
+    private String profilePicture;
+
+    @NonNull
     private String email;
 
     @NonNull
     private List<String> roles;
+
+    public JwtResponse(String jwt, String id, String username, String profilePicture, String email, List<String> roles) {
+        this.token = jwt;
+        this.id = id;
+        this.username = username;
+        this.profilePicture = profilePicture;
+        this.email = email;
+    }
 }
